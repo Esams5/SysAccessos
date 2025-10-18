@@ -1,0 +1,30 @@
+# General
+.DS_Store
+Thumbs.db
+
+# Maven / Java
+*/target/
+*.iml
+.idea/
+.classpath
+.project
+.settings/
+
+# Spring Boot
+*.log
+
+# Node / Vite / React
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.env.local
+frontend/.env.*.local
+
+# Environment files
+.env
+.env.*
+
+# Operating system
+ehthumbs.db
+Desktop.ini
+
