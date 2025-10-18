@@ -1,7 +1,7 @@
-package com.sysaccessos.backend.visit;
+package com.sysaccessos.backend.permission;
 
-import com.sysaccessos.backend.visit.dto.VisitDto;
-import com.sysaccessos.backend.visit.dto.VisitRequest;
+import com.sysaccessos.backend.permission.dto.UserPermissionDto;
+import com.sysaccessos.backend.permission.dto.UserPermissionRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -17,40 +17,40 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/visits")
+@RequestMapping("/api/permissions")
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
-public class VisitController {
+public class UserPermissionController {
 
-    private final VisitService visitService;
+    private final UserPermissionService permissionService;
 
-    public VisitController(VisitService visitService) {
-        this.visitService = visitService;
+    public UserPermissionController(UserPermissionService permissionService) {
+        this.permissionService = permissionService;
     }
 
     @GetMapping
-    public List<VisitDto> list() {
-        return visitService.findAll();
+    public List<UserPermissionDto> list() {
+        return permissionService.findAll();
     }
 
     @GetMapping("/{id}")
-    public VisitDto getById(@PathVariable Long id) {
-        return visitService.findById(id);
+    public UserPermissionDto getById(@PathVariable Long id) {
+        return permissionService.findById(id);
     }
 
     @PostMapping
-    public ResponseEntity<VisitDto> create(@Valid @RequestBody VisitRequest request) {
-        VisitDto created = visitService.create(request);
+    public ResponseEntity<UserPermissionDto> create(@Valid @RequestBody UserPermissionRequest request) {
+        UserPermissionDto created = permissionService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public VisitDto update(@PathVariable Long id, @Valid @RequestBody VisitRequest request) {
-        return visitService.update(id, request);
+    public UserPermissionDto update(@PathVariable Long id, @Valid @RequestBody UserPermissionRequest request) {
+        return permissionService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        visitService.delete(id);
+        permissionService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

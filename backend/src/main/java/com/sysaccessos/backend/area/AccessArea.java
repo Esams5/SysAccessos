@@ -1,4 +1,4 @@
-package com.sysaccessos.backend.visitor;
+package com.sysaccessos.backend.area;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,27 +11,24 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "visitors")
-public class Visitor {
+@Table(name = "access_areas")
+public class AccessArea {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 80, unique = true)
+    private String name;
+
+    @Column(nullable = false, length = 160)
+    private String description;
+
     @Column(nullable = false, length = 120)
-    private String fullName;
+    private String location;
 
-    @Column(nullable = false, length = 20, unique = true)
-    private String documentId;
-
-    @Column(nullable = false, length = 120)
-    private String email;
-
-    @Column(nullable = false, length = 20)
-    private String phone;
-
-    @Column(nullable = false, length = 100)
-    private String company;
+    @Column(nullable = false, length = 40)
+    private String securityLevel;
 
     @Column(length = 255)
     private String notes;
@@ -55,44 +52,36 @@ public class Visitor {
         this.id = id;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getName() {
+        return name;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getDocumentId() {
-        return documentId;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getEmail() {
-        return email;
+    public String getLocation() {
+        return location;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getSecurityLevel() {
+        return securityLevel;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public void setCompany(String company) {
-        this.company = company;
+    public void setSecurityLevel(String securityLevel) {
+        this.securityLevel = securityLevel;
     }
 
     public String getNotes() {

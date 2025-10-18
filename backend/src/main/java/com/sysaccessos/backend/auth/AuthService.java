@@ -26,10 +26,19 @@ public class AuthService {
         if (userRepository.existsByEmail(request.getEmail())) {
             return new AuthResponse(false, "Email já está em uso.", null);
         }
+        if (userRepository.existsByRegistrationCode(request.getRegistrationCode())) {
+            return new AuthResponse(false, "Código de registro já cadastrado.", null);
+        }
+        if (userRepository.existsByCardIdentifier(request.getCardIdentifier())) {
+            return new AuthResponse(false, "Identificador de cartão já cadastrado.", null);
+        }
 
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
+        user.setRegistrationCode(request.getRegistrationCode());
+        user.setRole(request.getRole());
+        user.setCardIdentifier(request.getCardIdentifier());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         User saved = userRepository.save(user);
@@ -49,7 +58,13 @@ public class AuthService {
     }
 
     private UserDto toUserDto(User user) {
-        return new UserDto(user.getId(), user.getName(), user.getEmail());
+        return new UserDto(
+            user.getId(),
+            user.getName(),
+            user.getEmail(),
+            user.getRegistrationCode(),
+            user.getRole(),
+            user.getCardIdentifier()
+        );
     }
 }
-

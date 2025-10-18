@@ -17,11 +17,20 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 120)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 80)
     private String email;
+
+    @Column(nullable = false, unique = true, length = 40)
+    private String registrationCode;
+
+    @Column(nullable = false, length = 40)
+    private String role;
+
+    @Column(nullable = false, unique = true, length = 80)
+    private String cardIdentifier;
 
     @Column(nullable = false)
     private String password;
@@ -54,6 +63,30 @@ public class User {
         this.email = email;
     }
 
+    public String getRegistrationCode() {
+        return registrationCode;
+    }
+
+    public void setRegistrationCode(String registrationCode) {
+        this.registrationCode = registrationCode;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getCardIdentifier() {
+        return cardIdentifier;
+    }
+
+    public void setCardIdentifier(String cardIdentifier) {
+        this.cardIdentifier = cardIdentifier;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -70,4 +103,3 @@ public class User {
         this.createdAt = createdAt;
     }
 }
-

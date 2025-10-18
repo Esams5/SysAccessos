@@ -1,6 +1,8 @@
-package com.sysaccessos.backend.auth.dto;
+package com.sysaccessos.backend.user.dto;
 
-public class UserDto {
+import java.time.OffsetDateTime;
+
+public class UserSummaryDto {
 
     private Long id;
     private String name;
@@ -8,18 +10,7 @@ public class UserDto {
     private String registrationCode;
     private String role;
     private String cardIdentifier;
-
-    public UserDto() {
-    }
-
-    public UserDto(Long id, String name, String email, String registrationCode, String role, String cardIdentifier) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.registrationCode = registrationCode;
-        this.role = role;
-        this.cardIdentifier = cardIdentifier;
-    }
+    private OffsetDateTime createdAt;
 
     public Long getId() {
         return id;
@@ -68,4 +59,13 @@ public class UserDto {
     public void setCardIdentifier(String cardIdentifier) {
         this.cardIdentifier = cardIdentifier;
     }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }
+

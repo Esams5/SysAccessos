@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import AuthForm from './components/AuthForm.jsx';
-import VisitorManager from './components/VisitorManager.jsx';
-import VisitManager from './components/VisitManager.jsx';
+import AreaManager from './components/AreaManager.jsx';
+import PermissionManager from './components/PermissionManager.jsx';
+import HistoryViewer from './components/HistoryViewer.jsx';
 import api from './services/api.js';
 
 const views = [
   { id: 'auth-login', label: 'Entrar' },
   { id: 'auth-register', label: 'Criar conta' },
-  { id: 'visitors', label: 'Visitantes' },
-  { id: 'visits', label: 'Visitas' }
+  { id: 'areas', label: 'Áreas' },
+  { id: 'permissions', label: 'Permissões' },
+  { id: 'history', label: 'Histórico' }
 ];
 
 function App() {
@@ -55,7 +57,7 @@ function App() {
     <div className="layout">
       <header>
         <h1>SysAccessos</h1>
-        <p>Autenticação, cadastro de visitantes e agendamento de visitas.</p>
+        <p>Controle de acesso com cadastro de usuários, permissões e histórico.</p>
       </header>
 
       <nav className="nav-tabs">
@@ -91,6 +93,12 @@ function App() {
                   <span>ID: {feedback.user.id}</span>
                   <span>Nome: {feedback.user.name}</span>
                   <span>Email: {feedback.user.email}</span>
+                  {feedback.user.registrationCode && (
+                    <span>Registro: {feedback.user.registrationCode}</span>
+                  )}
+                  {feedback.user.cardIdentifier && (
+                    <span>Cartão: {feedback.user.cardIdentifier}</span>
+                  )}
                 </div>
               )}
               {feedback.errors && (
@@ -107,8 +115,9 @@ function App() {
         </>
       ) : null}
 
-      {activeView === 'visitors' && <VisitorManager />}
-      {activeView === 'visits' && <VisitManager />}
+      {activeView === 'areas' && <AreaManager />}
+      {activeView === 'permissions' && <PermissionManager />}
+      {activeView === 'history' && <HistoryViewer />}
     </div>
   );
 }

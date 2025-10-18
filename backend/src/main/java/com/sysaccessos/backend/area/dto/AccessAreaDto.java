@@ -1,15 +1,14 @@
-package com.sysaccessos.backend.visitor.dto;
+package com.sysaccessos.backend.area.dto;
 
 import java.time.OffsetDateTime;
 
-public class VisitorDto {
+public class AccessAreaDto {
 
     private Long id;
-    private String fullName;
-    private String documentId;
-    private String email;
-    private String phone;
-    private String company;
+    private String name;
+    private String description;
+    private String location;
+    private String securityLevel;
     private String notes;
     private boolean active;
     private OffsetDateTime createdAt;
@@ -23,44 +22,36 @@ public class VisitorDto {
         this.id = id;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getName() {
+        return name;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getDocumentId() {
-        return documentId;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getEmail() {
-        return email;
+    public String getLocation() {
+        return location;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getSecurityLevel() {
+        return securityLevel;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public void setCompany(String company) {
-        this.company = company;
+    public void setSecurityLevel(String securityLevel) {
+        this.securityLevel = securityLevel;
     }
 
     public String getNotes() {

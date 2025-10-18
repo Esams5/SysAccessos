@@ -1,6 +1,7 @@
-package com.sysaccessos.backend.visit;
+package com.sysaccessos.backend.permission;
 
-import com.sysaccessos.backend.visitor.Visitor;
+import com.sysaccessos.backend.area.AccessArea;
+import com.sysaccessos.backend.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,42 +12,39 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "visits")
-public class Visit {
+@Table(name = "user_permissions")
+public class UserPermission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "visitor_id", nullable = false)
-    private Visitor visitor;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(nullable = false, length = 120)
-    private String hostName;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "area_id", nullable = false)
+    private AccessArea area;
 
-    @Column(nullable = false, length = 150)
-    private String purpose;
-
-    @Column(nullable = false)
-    private LocalDate visitDate;
+    @Column(nullable = false, length = 40)
+    private String accessLevel;
 
     @Column(nullable = false)
-    private LocalTime startTime;
+    private LocalDate validFrom;
 
     @Column(nullable = false)
-    private LocalTime endTime;
+    private LocalDate validUntil;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 20)
     private String status;
 
-    @Column(length = 255)
+    @Column(length = 160)
     private String notes;
 
     @CreationTimestamp
@@ -65,52 +63,44 @@ public class Visit {
         this.id = id;
     }
 
-    public Visitor getVisitor() {
-        return visitor;
+    public User getUser() {
+        return user;
     }
 
-    public void setVisitor(Visitor visitor) {
-        this.visitor = visitor;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public String getHostName() {
-        return hostName;
+    public AccessArea getArea() {
+        return area;
     }
 
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
+    public void setArea(AccessArea area) {
+        this.area = area;
     }
 
-    public String getPurpose() {
-        return purpose;
+    public String getAccessLevel() {
+        return accessLevel;
     }
 
-    public void setPurpose(String purpose) {
-        this.purpose = purpose;
+    public void setAccessLevel(String accessLevel) {
+        this.accessLevel = accessLevel;
     }
 
-    public LocalDate getVisitDate() {
-        return visitDate;
+    public LocalDate getValidFrom() {
+        return validFrom;
     }
 
-    public void setVisitDate(LocalDate visitDate) {
-        this.visitDate = visitDate;
+    public void setValidFrom(LocalDate validFrom) {
+        this.validFrom = validFrom;
     }
 
-    public LocalTime getStartTime() {
-        return startTime;
+    public LocalDate getValidUntil() {
+        return validUntil;
     }
 
-    public void setStartTime(LocalTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalTime endTime) {
-        this.endTime = endTime;
+    public void setValidUntil(LocalDate validUntil) {
+        this.validUntil = validUntil;
     }
 
     public String getStatus() {

@@ -1,7 +1,7 @@
-package com.sysaccessos.backend.visitor;
+package com.sysaccessos.backend.area;
 
-import com.sysaccessos.backend.visitor.dto.VisitorDto;
-import com.sysaccessos.backend.visitor.dto.VisitorRequest;
+import com.sysaccessos.backend.area.dto.AccessAreaDto;
+import com.sysaccessos.backend.area.dto.AccessAreaRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -17,40 +17,40 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/visitors")
+@RequestMapping("/api/areas")
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
-public class VisitorController {
+public class AccessAreaController {
 
-    private final VisitorService visitorService;
+    private final AccessAreaService areaService;
 
-    public VisitorController(VisitorService visitorService) {
-        this.visitorService = visitorService;
+    public AccessAreaController(AccessAreaService areaService) {
+        this.areaService = areaService;
     }
 
     @GetMapping
-    public List<VisitorDto> list() {
-        return visitorService.findAll();
+    public List<AccessAreaDto> list() {
+        return areaService.findAll();
     }
 
     @GetMapping("/{id}")
-    public VisitorDto getById(@PathVariable Long id) {
-        return visitorService.findById(id);
+    public AccessAreaDto getById(@PathVariable Long id) {
+        return areaService.findById(id);
     }
 
     @PostMapping
-    public ResponseEntity<VisitorDto> create(@Valid @RequestBody VisitorRequest request) {
-        VisitorDto created = visitorService.create(request);
+    public ResponseEntity<AccessAreaDto> create(@Valid @RequestBody AccessAreaRequest request) {
+        AccessAreaDto created = areaService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public VisitorDto update(@PathVariable Long id, @Valid @RequestBody VisitorRequest request) {
-        return visitorService.update(id, request);
+    public AccessAreaDto update(@PathVariable Long id, @Valid @RequestBody AccessAreaRequest request) {
+        return areaService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        visitorService.delete(id);
+        areaService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
