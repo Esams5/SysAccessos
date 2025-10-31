@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -37,6 +38,11 @@ public class AccessAreaController {
         return areaService.findById(id);
     }
 
+    @GetMapping("/authorized")
+    public List<AccessAreaDto> getAuthorizedByCard(@RequestParam("cardIdentifier") String cardIdentifier) {
+        return areaService.findAuthorizedByCard(cardIdentifier);
+    }
+
     @PostMapping
     public ResponseEntity<AccessAreaDto> create(@Valid @RequestBody AccessAreaRequest request) {
         AccessAreaDto created = areaService.create(request);
@@ -54,4 +60,3 @@ public class AccessAreaController {
         return ResponseEntity.noContent().build();
     }
 }
-

@@ -27,9 +27,11 @@ A API ficará disponível em `http://localhost:8080/api`. Endpoints principais:
 - `POST /api/auth/register` — cadastro de usuários com nome, email, matrícula, função e identificador do cartão
 - `POST /api/auth/login`
 - `GET /api/users` — lista resumida de usuários cadastrados
+- `POST /api/users` — cadastro administrativo de usuários/cartões
 - `GET|POST|PUT|DELETE /api/areas` — CRUD de áreas controladas
 - `GET|POST|PUT|DELETE /api/permissions` — CRUD de permissões usuário × área
 - `GET|POST /api/history` — consulta (com filtro opcional por período) e registro de eventos de acesso
+- `POST /api/access/simulate` — simulação de passagem de cartão (gera registro no histórico)
 
 ## Frontend (React + Vite)
 
@@ -43,21 +45,25 @@ O site ficará disponível em `http://localhost:5173`. O frontend já aponta par
 
 ### Fluxo após iniciar as aplicações
 
-1. **Cadastro/Login**: registre usuários informando nome, email, matrícula, função e identificador do cartão; após o cadastro, faça login para testar.
-2. **Áreas**: defina as áreas controladas, níveis de segurança e observações.
-3. **Permissões**: relacione cada usuário a uma área, definindo nível de acesso, período de validade e status.
-4. **Histórico**: registre manualmente entradas/saídas (ou consulte os eventos gravados) para montar a trilha de auditoria.
+1. **Criar administradores**: use `POST /api/auth/register` ou a própria tela de “Criar conta” para cadastrar pelo menos um usuário com `role = ADMIN`.
+2. **Login**: faça login com um usuário `ADMIN`. O painel exibirá abas administrativas.
+3. **Usuários e Cartões**: cadastre novos usuários/cartões (matrícula e cartão aceitam apenas números).
+4. **Áreas**: defina os ambientes controlados e seus níveis de segurança.
+5. **Permissões**: vincule cartões/usuários às áreas com nível de acesso, vigência e status.
+6. **Simulação de acesso**: informe o número do cartão e a área para simular uma passagem. O sistema valida permissões e grava o evento.
+7. **Histórico**: acompanhe a tabela com nome do usuário, número do cartão, local, tipo de evento e resultado (autorizado/negado).
 
 ## Funcionalidades atuais
 
-- **Autenticação de usuários** com senha criptografada (`BCrypt`), guardando também matrícula, função e identificador de cartão.
-- **Áreas de acesso**: CRUD com nome, descrição, localização, nível de segurança, observações e status ativo/inativo.
-- **Permissões**: CRUD relacionando usuário × área, com nível de acesso, período de validade, status e observações. Impede duplicidades ativas.
-- **Histórico**: registro consulta de eventos (entrada/saída, autorizado/negado) vinculados a usuário e área, com captura do cartão utilizado.
-- **API para listagem de usuários** para alimentar os cadastros de permissões e histórico no frontend.
+- **Autenticação de usuários** com senha criptografada (`BCrypt`), guardando matrícula, função e identificador numérico do cartão.
+- **Gestão administrativa**: painel pós-login para perfis `ADMIN` com cadastro de usuários/cartões, áreas, permissões e simulação de acesso.
+- **Áreas de acesso**: CRUD completo com status ativo/inativo.
+- **Permissões**: relação usuário × área com controle de nível, vigência e status.
+- **Histórico**: registro e consulta de eventos (entrada/saída, autorizado/negado) exibindo nome e número do cartão utilizado.
 
 ## Notas
 
 - Senhas são armazenadas com hash `BCrypt`.
 - O fluxo retorna mensagens de sucesso ou erro para facilitar feedback ao operador.
 - Ajuste as configurações de CORS nos controladores (`@CrossOrigin`) caso altere a URL do frontend.
+- O endpoint de simulação grava automaticamente eventos no histórico para auditoria.

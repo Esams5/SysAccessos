@@ -18,6 +18,36 @@ function AreaManager() {
   const [listLoading, setListLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
+  const formatUsageStatus = (status, active) => {
+    if (!active) {
+      return 'Inativa';
+    }
+    if (!status) {
+      return 'Disponível';
+    }
+    switch (status.toLowerCase()) {
+      case 'disponivel':
+        return 'Disponível';
+      case 'emuso':
+        return 'Em uso';
+      case 'naodevolvida':
+        return 'Não devolvida';
+      default:
+        return status;
+    }
+  };
+
+  const formatDateTime = (value) => {
+    if (!value) {
+      return '—';
+    }
+    try {
+      return new Date(value).toLocaleString();
+    } catch (error) {
+      return '—';
+    }
+  };
+
   const loadAreas = async () => {
     setListLoading(true);
     try {
@@ -216,7 +246,9 @@ function AreaManager() {
                   <th>Descrição</th>
                   <th>Localização</th>
                   <th>Nível</th>
-                  <th>Status</th>
+                  <th>Situação de uso</th>
+                  <th>Responsável atual</th>
+                  <th>Prazo limite</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -227,7 +259,18 @@ function AreaManager() {
                     <td>{area.description}</td>
                     <td>{area.location}</td>
                     <td>{area.securityLevel}</td>
-                    <td>{area.active ? 'Ativa' : 'Inativa'}</td>
+                    <td>{formatUsageStatus(area.status, area.active)}</td>
+                    <td>
+                      {area.inUse ? (
+                        <div className="stacked">
+                          <span>{area.occupantName || 'Em uso'}</span>
+                          {area.occupantCardIdentifier && <small>Cartão: {area.occupantCardIdentifier}</small>}
+                        </div>
+                      ) : (
+                        <span>—</span>
+                      )}
+                    </td>
+                    <td>{formatDateTime(area.usageDeadline)}</td>
                     <td>
                       <div className="table-actions">
                         <button type="button" onClick={() => handleEdit(area)}>

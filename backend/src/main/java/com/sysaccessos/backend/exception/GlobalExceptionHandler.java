@@ -1,5 +1,6 @@
 package com.sysaccessos.backend.exception;
 
+import com.sysaccessos.backend.user.UserValidationException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,5 +31,13 @@ public class GlobalExceptionHandler {
         body.put("success", false);
         body.put("message", ex.getReason());
         return ResponseEntity.status(ex.getStatusCode()).body(body);
+    }
+
+    @ExceptionHandler(UserValidationException.class)
+    public ResponseEntity<Map<String, Object>> handleUserValidation(UserValidationException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("success", false);
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 }

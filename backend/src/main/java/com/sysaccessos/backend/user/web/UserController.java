@@ -1,12 +1,19 @@
 package com.sysaccessos.backend.user.web;
 
+import com.sysaccessos.backend.auth.dto.RegisterRequest;
 import com.sysaccessos.backend.user.User;
 import com.sysaccessos.backend.user.UserRepository;
+import com.sysaccessos.backend.user.UserManagementService;
 import com.sysaccessos.backend.user.dto.UserSummaryDto;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,9 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserRepository userRepository;
+    private final UserManagementService userManagementService;
 
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository, UserManagementService userManagementService) {
         this.userRepository = userRepository;
+        this.userManagementService = userManagementService;
     }
 
     @GetMapping
@@ -26,6 +35,12 @@ public class UserController {
         return userRepository.findAll().stream()
             .map(this::toDto)
             .collect(Collectors.toList());
+    }
+
+    @PostMapping
+    public ResponseEntity<UserSummaryDto> create(@Valid @RequestBody RegisterRequest request) {
+        User user = userManagementService.createUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(toDto(user));
     }
 
     private UserSummaryDto toDto(User user) {
@@ -40,4 +55,3 @@ public class UserController {
         return dto;
     }
 }
-

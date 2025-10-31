@@ -1,22 +1,17 @@
 import { useState } from 'react';
 import AuthForm from './components/AuthForm.jsx';
+import UserManager from './components/UserManager.jsx';
 import AreaManager from './components/AreaManager.jsx';
 import PermissionManager from './components/PermissionManager.jsx';
+import AccessSimulation from './components/AccessSimulation.jsx';
 import HistoryViewer from './components/HistoryViewer.jsx';
 import api from './services/api.js';
-
-const views = [
-  { id: 'auth-login', label: 'Entrar' },
-  { id: 'auth-register', label: 'Criar conta' },
-  { id: 'areas', label: 'Áreas' },
-  { id: 'permissions', label: 'Permissões' },
-  { id: 'history', label: 'Histórico' }
-];
 
 function App() {
   const [activeView, setActiveView] = useState('auth-login');
   const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [authenticatedUser, setAuthenticatedUser] = useState(null);
 
   const handleAuthSubmit = async (payload) => {
     const currentMode = activeView === 'auth-login' ? 'login' : 'register';
@@ -30,6 +25,12 @@ function App() {
       const defaultMessage = data?.message || 'Operação realizada com sucesso.';
       if (currentMode === 'register') {
         setActiveView('auth-login');
+      }
+
+      if (currentMode === 'login' && data?.user) {
+        setAuthenticatedUser(data.user);
+        const isAdmin = data.user.role?.toUpperCase() === 'ADMIN';
+        setActiveView(isAdmin ? 'users' : 'history');
       }
 
       setFeedback({
@@ -53,32 +54,62 @@ function App() {
     }
   };
 
+  const handleLogout = () => {
+    setAuthenticatedUser(null);
+    setActiveView('auth-login');
+    setFeedback(null);
+  };
+
+  const isAdmin = authenticatedUser?.role?.toUpperCase() === 'ADMIN';
+
+  const authViews = [
+    { id: 'auth-login', label: 'Entrar' },
+    { id: 'auth-register', label: 'Criar conta' }
+  ];
+
+  const adminViews = [
+    { id: 'users', label: 'Usuários' },
+    { id: 'areas', label: 'Áreas' },
+    { id: 'permissions', label: 'Permissões' },
+    { id: 'simulate', label: 'Simulação' },
+    { id: 'history', label: 'Histórico' }
+  ];
+
   return (
     <div className="layout">
       <header>
         <h1>SysAccessos</h1>
         <p>Controle de acesso com cadastro de usuários, permissões e histórico.</p>
+        {authenticatedUser && (
+          <div className="user-banner">
+            <span>
+              Logado como <strong>{authenticatedUser.name}</strong> ({authenticatedUser.role})
+            </span>
+            <button type="button" className="secondary" onClick={handleLogout}>
+              Sair
+            </button>
+          </div>
+        )}
       </header>
 
-      <nav className="nav-tabs">
-        {views.map((view) => (
-          <button
-            key={view.id}
-            type="button"
-            className={activeView === view.id ? 'active' : ''}
-            onClick={() => {
-              setActiveView(view.id);
-              if (!view.id.startsWith('auth')) {
-                setFeedback(null);
-              }
-            }}
-          >
-            {view.label}
-          </button>
-        ))}
-      </nav>
+      {!authenticatedUser ? (
+        <>
+          <nav className="nav-tabs">
+            {authViews.map((view) => (
+              <button
+                key={view.id}
+                type="button"
+                className={activeView === view.id ? 'active' : ''}
+                onClick={() => {
+                  setActiveView(view.id);
+                  setFeedback(null);
+                }}
+              >
+                {view.label}
+              </button>
+            ))}
+          </nav>
 
-      {activeView === 'auth-login' || activeView === 'auth-register' ? (
         <>
           <AuthForm
             mode={activeView === 'auth-login' ? 'login' : 'register'}
@@ -113,11 +144,37 @@ function App() {
             </div>
           )}
         </>
-      ) : null}
+        </>
+      ) : isAdmin ? (
+        <>
+          <nav className="nav-tabs">
+            {adminViews.map((view) => (
+              <button
+                key={view.id}
+                type="button"
+                className={activeView === view.id ? 'active' : ''}
+                onClick={() => {
+                  setActiveView(view.id);
+                  setFeedback(null);
+                }}
+              >
+                {view.label}
+              </button>
+            ))}
+          </nav>
 
-      {activeView === 'areas' && <AreaManager />}
-      {activeView === 'permissions' && <PermissionManager />}
-      {activeView === 'history' && <HistoryViewer />}
+          {activeView === 'users' && <UserManager />}
+          {activeView === 'areas' && <AreaManager />}
+          {activeView === 'permissions' && <PermissionManager />}
+          {activeView === 'simulate' && <AccessSimulation />}
+          {activeView === 'history' && <HistoryViewer />}
+        </>
+      ) : (
+        <>
+          <p>Seu perfil não possui privilégios administrativos. Consulte o histórico abaixo.</p>
+          <HistoryViewer />
+        </>
+      )}
     </div>
   );
 }

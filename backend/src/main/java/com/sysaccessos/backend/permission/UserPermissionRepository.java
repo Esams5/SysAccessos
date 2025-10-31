@@ -8,5 +8,6 @@ public interface UserPermissionRepository extends JpaRepository<UserPermission, 
     List<UserPermission> findByUserId(Long userId);
 
     boolean existsByUserIdAndAreaIdAndStatus(Long userId, Long areaId, String status);
-}
 
+    List<UserPermission> findByUserIdAndAreaId(Long userId, Long areaId);
+}

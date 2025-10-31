@@ -19,3 +19,14 @@ export async function deleteArea(id) {
   await api.delete(`/areas/${id}`);
 }
 
+export async function fetchAuthorizedAreas(cardIdentifier) {
+  const { data } = await api.get('/areas/authorized', {
+    params: { cardIdentifier }
+  });
+  return data;
+}
+
+export async function moveArea(payload) {
+  const { data } = await api.post('/areas/movements', payload);
+  return data;
+}

@@ -5,3 +5,7 @@ export async function fetchUsers() {
   return data;
 }
 
+export async function createUser(payload) {
+  const { data } = await api.post('/users', payload);
+  return data;
+}

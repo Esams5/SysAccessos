@@ -247,11 +247,11 @@ function HistoryViewer() {
               <thead>
                 <tr>
                   <th>Data/Hora</th>
-                  <th>Usuário</th>
+                  <th>Nome</th>
+                  <th>Nº do cartão</th>
                   <th>Área</th>
                   <th>Evento</th>
                   <th>Resultado</th>
-                  <th>Cartão</th>
                 </tr>
               </thead>
               <tbody>
@@ -259,15 +259,12 @@ function HistoryViewer() {
                   <tr key={item.id}>
                     <td>{new Date(item.recordedAt).toLocaleString()}</td>
                     <td>
-                      <div className="stacked">
-                        <span>{item.userName}</span>
-                        <small>ID: {item.userId}</small>
-                      </div>
+                      {item.userName}
                     </td>
+                    <td>{item.cardIdentifier}</td>
                     <td>{item.areaName}</td>
                     <td>{item.eventType}</td>
                     <td>{item.result}</td>
-                    <td>{item.cardIdentifier}</td>
                   </tr>
                 ))}
               </tbody>
