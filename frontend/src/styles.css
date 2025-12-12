@@ -312,6 +312,89 @@ th {
   gap: 0.5rem;
 }
 
+.table-row-editing {
+  background: #f1f5f9;
+}
+
+.table-row-editing .table-actions {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.table-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.table-input input,
+.table-input select,
+.table-input textarea {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.table-input input:focus,
+.table-input select:focus,
+.table-input textarea:focus {
+  outline: none;
+  border-color: #1769aa;
+  box-shadow: 0 0 0 2px rgba(23, 105, 170, 0.1);
+}
+
+.table-input textarea {
+  resize: vertical;
+}
+
+.table-input.full {
+  width: 100%;
+}
+
+.inline-error {
+  color: #dc2626;
+  font-size: 0.75rem;
+}
+
+.inline-message {
+  margin-top: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border-left: 3px solid transparent;
+  background: #f8fafc;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.inline-message.success {
+  border-color: #16a34a;
+  color: #166534;
+}
+
+.inline-message.error {
+  border-color: #dc2626;
+  color: #991b1b;
+}
+
+.inline-message ul {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.checkbox.inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
 .table-actions button {
   padding: 0.4rem 0.8rem;
   border-radius: 8px;

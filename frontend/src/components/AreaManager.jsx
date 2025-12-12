@@ -10,13 +10,26 @@ const initialState = {
   active: true
 };
 
+const inlineInitialState = {
+  name: '',
+  description: '',
+  location: '',
+  securityLevel: 'RESTRITA',
+  notes: '',
+  active: true
+};
+
 function AreaManager() {
   const [areas, setAreas] = useState([]);
   const [formData, setFormData] = useState(initialState);
-  const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [listLoading, setListLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
+  const [inlineEditingId, setInlineEditingId] = useState(null);
+  const [inlineDraft, setInlineDraft] = useState(inlineInitialState);
+  const [inlineErrors, setInlineErrors] = useState({});
+  const [inlineSaving, setInlineSaving] = useState(false);
+  const [inlineFeedback, setInlineFeedback] = useState(null);
 
   const formatUsageStatus = (status, active) => {
     if (!active) {
@@ -67,6 +80,88 @@ function AreaManager() {
     loadAreas();
   }, []);
 
+  const validateInline = (draft) => {
+    const errors = {};
+    if (!draft.name.trim()) {
+      errors.name = 'Informe o nome da área.';
+    }
+    if (!draft.description.trim()) {
+      errors.description = 'Informe a descrição.';
+    }
+    if (!draft.location.trim()) {
+      errors.location = 'Informe a localização.';
+    }
+    return errors;
+  };
+
+  const startInlineEdit = (area) => {
+    setInlineEditingId(area.id);
+    setInlineDraft({
+      name: area.name ?? '',
+      description: area.description ?? '',
+      location: area.location ?? '',
+      securityLevel: area.securityLevel ?? 'RESTRITA',
+      notes: area.notes ?? '',
+      active: Boolean(area.active)
+    });
+    setInlineErrors({});
+    setInlineFeedback(null);
+  };
+
+  const cancelInlineEdit = () => {
+    setInlineEditingId(null);
+    setInlineDraft(inlineInitialState);
+    setInlineErrors({});
+    setInlineFeedback(null);
+  };
+
+  const handleInlineChange = (event) => {
+    const { name, value, type, checked } = event.target;
+    const nextValue = type === 'checkbox' ? checked : value;
+    setInlineDraft((prev) => {
+      const updated = {
+        ...prev,
+        [name]: nextValue
+      };
+      setInlineErrors(validateInline(updated));
+      return updated;
+    });
+  };
+
+  const handleInlineSave = async (areaId) => {
+    const currentErrors = validateInline(inlineDraft);
+    if (Object.keys(currentErrors).length > 0) {
+      setInlineErrors(currentErrors);
+      return;
+    }
+
+    setInlineSaving(true);
+    setInlineFeedback(null);
+    try {
+      const payload = {
+        name: inlineDraft.name.trim(),
+        description: inlineDraft.description.trim(),
+        location: inlineDraft.location.trim(),
+        securityLevel: inlineDraft.securityLevel,
+        notes: inlineDraft.notes.trim(),
+        active: inlineDraft.active
+      };
+
+      const updatedArea = await updateArea(areaId, payload);
+      setAreas((prev) => prev.map((area) => (area.id === areaId ? updatedArea : area)));
+      setInlineFeedback({ id: areaId, type: 'success', message: 'Área atualizada com sucesso.' });
+      setInlineEditingId(null);
+      setInlineDraft(inlineInitialState);
+      setInlineErrors({});
+    } catch (error) {
+      const message = error.response?.data?.message || 'Erro ao atualizar área.';
+      const errors = error.response?.data?.errors;
+      setInlineFeedback({ id: areaId, type: 'error', message, errors });
+    } finally {
+      setInlineSaving(false);
+    }
+  };
+
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
     setFormData((prev) => ({
@@ -76,7 +171,6 @@ function AreaManager() {
   };
 
   const resetForm = () => {
-    setEditingId(null);
     setFormData(initialState);
   };
 
@@ -95,13 +189,8 @@ function AreaManager() {
     };
 
     try {
-      if (editingId) {
-        await updateArea(editingId, payload);
-        setFeedback({ type: 'success', message: 'Área atualizada com sucesso.' });
-      } else {
-        await createArea(payload);
-        setFeedback({ type: 'success', message: 'Área criada com sucesso.' });
-      }
+      await createArea(payload);
+      setFeedback({ type: 'success', message: 'Área criada com sucesso.' });
       resetForm();
       await loadAreas();
     } catch (error) {
@@ -111,19 +200,6 @@ function AreaManager() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleEdit = (area) => {
-    setEditingId(area.id);
-    setFormData({
-      name: area.name,
-      description: area.description,
-      location: area.location,
-      securityLevel: area.securityLevel,
-      notes: area.notes || '',
-      active: area.active
-    });
-    setFeedback(null);
   };
 
   const handleDelete = async (id) => {
@@ -136,8 +212,8 @@ function AreaManager() {
     try {
       await deleteArea(id);
       setFeedback({ type: 'success', message: 'Área removida.' });
-      if (editingId === id) {
-        resetForm();
+      if (inlineEditingId === id) {
+        cancelInlineEdit();
       }
       await loadAreas();
     } catch (error) {
@@ -203,13 +279,11 @@ function AreaManager() {
 
         <div className="form-actions">
           <button type="submit" disabled={loading}>
-            {loading ? 'Salvando...' : editingId ? 'Atualizar área' : 'Cadastrar área'}
+            {loading ? 'Salvando...' : 'Cadastrar área'}
           </button>
-          {editingId && (
-            <button type="button" className="secondary" onClick={resetForm} disabled={loading}>
-              Cancelar edição
-            </button>
-          )}
+          <button type="button" className="secondary" onClick={resetForm} disabled={loading}>
+            Limpar
+          </button>
         </div>
 
         {feedback && (
@@ -253,36 +327,121 @@ function AreaManager() {
                 </tr>
               </thead>
               <tbody>
-                {areas.map((area) => (
-                  <tr key={area.id}>
-                    <td>{area.name}</td>
-                    <td>{area.description}</td>
-                    <td>{area.location}</td>
-                    <td>{area.securityLevel}</td>
-                    <td>{formatUsageStatus(area.status, area.active)}</td>
-                    <td>
-                      {area.inUse ? (
-                        <div className="stacked">
-                          <span>{area.occupantName || 'Em uso'}</span>
-                          {area.occupantCardIdentifier && <small>Cartão: {area.occupantCardIdentifier}</small>}
+                {areas.map((area) => {
+                  const isEditing = inlineEditingId === area.id;
+                  const hasFeedback = inlineFeedback?.id === area.id;
+
+                  return (
+                    <tr key={area.id} className={isEditing ? 'table-row-editing' : undefined}>
+                      <td>
+                        {isEditing ? (
+                          <div className="table-input">
+                            <input name="name" value={inlineDraft.name} onChange={handleInlineChange} />
+                            {inlineErrors.name && <small className="inline-error">{inlineErrors.name}</small>}
+                          </div>
+                        ) : (
+                          area.name
+                        )}
+                      </td>
+                      <td>
+                        {isEditing ? (
+                          <div className="table-input">
+                            <input name="description" value={inlineDraft.description} onChange={handleInlineChange} />
+                            {inlineErrors.description && <small className="inline-error">{inlineErrors.description}</small>}
+                          </div>
+                        ) : (
+                          area.description
+                        )}
+                      </td>
+                      <td>
+                        {isEditing ? (
+                          <div className="table-input">
+                            <input name="location" value={inlineDraft.location} onChange={handleInlineChange} />
+                            {inlineErrors.location && <small className="inline-error">{inlineErrors.location}</small>}
+                          </div>
+                        ) : (
+                          area.location
+                        )}
+                      </td>
+                      <td>
+                        {isEditing ? (
+                          <div className="table-input">
+                            <select name="securityLevel" value={inlineDraft.securityLevel} onChange={handleInlineChange}>
+                              <option value="RESTRITA">Restrita</option>
+                              <option value="CONFIDENCIAL">Confidencial</option>
+                              <option value="GERAL">Geral</option>
+                              <option value="CRITICA">Crítica</option>
+                            </select>
+                          </div>
+                        ) : (
+                          area.securityLevel
+                        )}
+                      </td>
+                      <td>{formatUsageStatus(area.status, isEditing ? inlineDraft.active : area.active)}</td>
+                      <td>
+                        {area.inUse ? (
+                          <div className="stacked">
+                            <span>{area.occupantName || 'Em uso'}</span>
+                            {area.occupantCardIdentifier && <small>Cartão: {area.occupantCardIdentifier}</small>}
+                          </div>
+                        ) : (
+                          <span>—</span>
+                        )}
+                      </td>
+                      <td>{formatDateTime(area.usageDeadline)}</td>
+                      <td>
+                        <div className="table-actions">
+                          {isEditing ? (
+                            <>
+                              <label className="checkbox inline">
+                                <input type="checkbox" name="active" checked={inlineDraft.active} onChange={handleInlineChange} />
+                                Área ativa
+                              </label>
+                              <div className="table-input full">
+                                <textarea
+                                  name="notes"
+                                  rows={2}
+                                  value={inlineDraft.notes}
+                                  onChange={handleInlineChange}
+                                  placeholder="Observações"
+                                />
+                              </div>
+                              <button type="button" onClick={() => handleInlineSave(area.id)} disabled={inlineSaving}>
+                                {inlineSaving ? 'Salvando...' : 'Salvar'}
+                              </button>
+                              <button type="button" className="secondary" onClick={cancelInlineEdit} disabled={inlineSaving}>
+                                Cancelar
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button type="button" onClick={() => startInlineEdit(area)}>
+                                Editar
+                              </button>
+                              <button type="button" className="danger" onClick={() => handleDelete(area.id)}>
+                                Excluir
+                              </button>
+                            </>
+                          )}
                         </div>
-                      ) : (
-                        <span>—</span>
-                      )}
-                    </td>
-                    <td>{formatDateTime(area.usageDeadline)}</td>
-                    <td>
-                      <div className="table-actions">
-                        <button type="button" onClick={() => handleEdit(area)}>
-                          Editar
-                        </button>
-                        <button type="button" className="danger" onClick={() => handleDelete(area.id)}>
-                          Excluir
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                        {hasFeedback && (
+                          <div className={`inline-message ${inlineFeedback.type}`}>
+                            <span>{inlineFeedback.message}</span>
+                            {inlineFeedback.errors && (
+                              <ul>
+                                {Object.entries(inlineFeedback.errors).map(([field, message]) => (
+                                  <li key={field}>
+                                    {field}: {message}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

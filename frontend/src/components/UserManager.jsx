@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { createUser, fetchUsers } from '../services/userService.js';
+import { createUser, fetchUsers, updateUser } from '../services/userService.js';
 
 const initialState = {
   name: '',
@@ -10,12 +10,25 @@ const initialState = {
   password: ''
 };
 
+const inlineInitialState = {
+  name: '',
+  email: '',
+  registrationCode: '',
+  role: '',
+  cardIdentifier: ''
+};
+
 function UserManager({ onUserCreated }) {
   const [users, setUsers] = useState([]);
   const [formData, setFormData] = useState(initialState);
   const [loading, setLoading] = useState(false);
   const [listLoading, setListLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
+  const [inlineEditingId, setInlineEditingId] = useState(null);
+  const [inlineDraft, setInlineDraft] = useState(inlineInitialState);
+  const [inlineErrors, setInlineErrors] = useState({});
+  const [inlineSaving, setInlineSaving] = useState(false);
+  const [inlineFeedback, setInlineFeedback] = useState(null);
 
   const loadUsers = async () => {
     setListLoading(true);
@@ -36,6 +49,98 @@ function UserManager({ onUserCreated }) {
   useEffect(() => {
     loadUsers();
   }, []);
+
+  const validateInline = (draft) => {
+    const errors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!draft.name.trim()) {
+      errors.name = 'Informe o nome.';
+    }
+    if (!draft.email.trim()) {
+      errors.email = 'Informe o email.';
+    } else if (!emailRegex.test(draft.email.trim())) {
+      errors.email = 'Email inválido.';
+    }
+    if (!draft.registrationCode.trim()) {
+      errors.registrationCode = 'Informe a matrícula/registro.';
+    }
+    if (!draft.role.trim()) {
+      errors.role = 'Informe a função.';
+    }
+    if (!draft.cardIdentifier.trim()) {
+      errors.cardIdentifier = 'Informe o número do cartão.';
+    }
+
+    return errors;
+  };
+
+  const startInlineEdit = (user) => {
+    setInlineEditingId(user.id);
+    setInlineDraft({
+      name: user.name ?? '',
+      email: user.email ?? '',
+      registrationCode: user.registrationCode ?? '',
+      role: user.role ?? '',
+      cardIdentifier: user.cardIdentifier ?? ''
+    });
+    setInlineErrors({});
+    setInlineFeedback(null);
+  };
+
+  const cancelInlineEdit = () => {
+    setInlineEditingId(null);
+    setInlineDraft(inlineInitialState);
+    setInlineErrors({});
+    setInlineFeedback(null);
+  };
+
+  const handleInlineChange = (event) => {
+    const { name, value } = event.target;
+    const nextValue = name === 'registrationCode' || name === 'cardIdentifier' ? value.replace(/\D/g, '') : value;
+
+    setInlineDraft((prev) => {
+      const updated = {
+        ...prev,
+        [name]: nextValue
+      };
+      setInlineErrors(validateInline(updated));
+      return updated;
+    });
+  };
+
+  const handleInlineSave = async (userId) => {
+    const currentErrors = validateInline(inlineDraft);
+    if (Object.keys(currentErrors).length > 0) {
+      setInlineErrors(currentErrors);
+      return;
+    }
+
+    setInlineSaving(true);
+    setInlineFeedback(null);
+    try {
+      const payload = {
+        name: inlineDraft.name.trim(),
+        email: inlineDraft.email.trim(),
+        registrationCode: inlineDraft.registrationCode.trim(),
+        role: inlineDraft.role.trim(),
+        cardIdentifier: inlineDraft.cardIdentifier.trim()
+      };
+
+      const updatedUser = await updateUser(userId, payload);
+      setUsers((prev) => prev.map((user) => (user.id === userId ? updatedUser : user)));
+      setInlineFeedback({ id: userId, type: 'success', message: 'Usuário atualizado com sucesso.' });
+      setInlineEditingId(null);
+      setInlineDraft(inlineInitialState);
+      setInlineErrors({});
+    } catch (error) {
+      const message = error.response?.data?.message || 'Erro ao atualizar usuário.';
+      const errors = error.response?.data?.errors;
+      setInlineFeedback({ id: userId, type: 'error', message, errors });
+    } finally {
+      setInlineSaving(false);
+    }
+  };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -177,18 +282,113 @@ function UserManager({ onUserCreated }) {
                   <th>Matrícula</th>
                   <th>Função</th>
                   <th>Cartão</th>
+                  <th>Ações</th>
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.name}</td>
-                    <td>{user.email}</td>
-                    <td>{user.registrationCode}</td>
-                    <td>{user.role}</td>
-                    <td>{user.cardIdentifier}</td>
-                  </tr>
-                ))}
+                {users.map((user) => {
+                  const isEditing = inlineEditingId === user.id;
+                  const hasFeedback = inlineFeedback?.id === user.id;
+
+                  return (
+                    <tr key={user.id} className={isEditing ? 'table-row-editing' : undefined}>
+                      <td>
+                        {isEditing ? (
+                          <div className="table-input">
+                            <input name="name" value={inlineDraft.name} onChange={handleInlineChange} />
+                            {inlineErrors.name && <small className="inline-error">{inlineErrors.name}</small>}
+                          </div>
+                        ) : (
+                          user.name
+                        )}
+                      </td>
+                      <td>
+                        {isEditing ? (
+                          <div className="table-input">
+                            <input name="email" type="email" value={inlineDraft.email} onChange={handleInlineChange} />
+                            {inlineErrors.email && <small className="inline-error">{inlineErrors.email}</small>}
+                          </div>
+                        ) : (
+                          user.email
+                        )}
+                      </td>
+                      <td>
+                        {isEditing ? (
+                          <div className="table-input">
+                            <input
+                              name="registrationCode"
+                              value={inlineDraft.registrationCode}
+                              onChange={handleInlineChange}
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              maxLength={40}
+                            />
+                            {inlineErrors.registrationCode && <small className="inline-error">{inlineErrors.registrationCode}</small>}
+                          </div>
+                        ) : (
+                          user.registrationCode
+                        )}
+                      </td>
+                      <td>
+                        {isEditing ? (
+                          <div className="table-input">
+                            <input name="role" value={inlineDraft.role} onChange={handleInlineChange} />
+                            {inlineErrors.role && <small className="inline-error">{inlineErrors.role}</small>}
+                          </div>
+                        ) : (
+                          user.role
+                        )}
+                      </td>
+                      <td>
+                        {isEditing ? (
+                          <div className="table-input">
+                            <input
+                              name="cardIdentifier"
+                              value={inlineDraft.cardIdentifier}
+                              onChange={handleInlineChange}
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              maxLength={80}
+                            />
+                            {inlineErrors.cardIdentifier && <small className="inline-error">{inlineErrors.cardIdentifier}</small>}
+                          </div>
+                        ) : (
+                          user.cardIdentifier
+                        )}
+                      </td>
+                      <td>
+                        <div className="table-actions">
+                          {isEditing ? (
+                            <>
+                              <button type="button" onClick={() => handleInlineSave(user.id)} disabled={inlineSaving}>
+                                {inlineSaving ? 'Salvando...' : 'Salvar'}
+                              </button>
+                              <button type="button" className="secondary" onClick={cancelInlineEdit} disabled={inlineSaving}>
+                                Cancelar
+                              </button>
+                            </>
+                          ) : (
+                            <button type="button" onClick={() => startInlineEdit(user)}>Editar</button>
+                          )}
+                        </div>
+                        {hasFeedback && (
+                          <div className={`inline-message ${inlineFeedback.type}`}>
+                            <span>{inlineFeedback.message}</span>
+                            {inlineFeedback.errors && (
+                              <ul>
+                                {Object.entries(inlineFeedback.errors).map(([field, message]) => (
+                                  <li key={field}>
+                                    {field}: {message}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
