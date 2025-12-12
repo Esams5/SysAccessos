@@ -50,8 +50,9 @@ O site ficará disponível em `http://localhost:5173`. O frontend já aponta par
 3. **Usuários e Cartões**: cadastre novos usuários/cartões (matrícula e cartão aceitam apenas números).
 4. **Áreas**: defina os ambientes controlados e seus níveis de segurança.
 5. **Permissões**: vincule cartões/usuários às áreas com nível de acesso, vigência e status.
-6. **Simulação de acesso**: informe o número do cartão e a área para simular uma passagem. O sistema valida permissões e grava o evento.
+6. **Simulação de acesso**: informe o número do cartão e a área para simular uma passagem. O sistema valida permissões, grava o evento e atualiza o status da sala automaticamente conforme o momento do clique (entrada/saída).
 7. **Histórico**: acompanhe a tabela com nome do usuário, número do cartão, local, tipo de evento e resultado (autorizado/negado).
+8. **IA / Recomendações**: utilize a aba dedicada para informar um cartão e visualizar, com base no histórico recente, quais áreas o sistema sugere liberar ou monitorar.
 
 ### Usuário padrão
 
@@ -83,6 +84,7 @@ Usuários não `ADMIN` veem apenas suas próprias permissões e histórico de ac
 - **Áreas de acesso**: CRUD completo com status ativo/inativo.
 - **Permissões**: relação usuário × área com controle de nível, vigência e status.
 - **Histórico**: registro e consulta de eventos (entrada/saída, autorizado/negado) exibindo nome e número do cartão utilizado.
+- **Recomendações com IA**: heurística que analisa o histórico individual e sugere áreas mais relevantes para cada cartão, exibindo justificativa e data do último acesso.
 
 ## Notas
 

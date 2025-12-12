@@ -6,6 +6,7 @@ import PermissionManager from './components/PermissionManager.jsx';
 import AccessSimulation from './components/AccessSimulation.jsx';
 import HistoryViewer from './components/HistoryViewer.jsx';
 import UserSelfService from './components/UserSelfService.jsx';
+import Recommendations from './components/Recommendations.jsx';
 import api from './services/api.js';
 
 function App() {
@@ -59,7 +60,8 @@ function App() {
     { id: 'areas', label: 'Áreas' },
     { id: 'permissions', label: 'Permissões' },
     { id: 'simulate', label: 'Simulação' },
-    { id: 'history', label: 'Histórico' }
+    { id: 'history', label: 'Histórico' },
+    { id: 'ai', label: 'IA / Recomendações' }
   ];
 
   return (
@@ -133,6 +135,7 @@ function App() {
           {activeView === 'permissions' && <PermissionManager />}
           {activeView === 'simulate' && <AccessSimulation />}
           {activeView === 'history' && <HistoryViewer />}
+          {activeView === 'ai' && <Recommendations />}
         </>
       ) : (
         <UserSelfService user={authenticatedUser} />
