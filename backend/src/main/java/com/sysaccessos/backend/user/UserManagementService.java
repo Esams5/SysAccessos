@@ -40,7 +40,7 @@ public class UserManagementService {
         user.setName(request.getName().trim());
         user.setEmail(email);
         user.setRegistrationCode(registrationCode);
-        user.setRole(request.getRole().trim());
+        user.setRole(parseRole(request.getRole()));
         user.setCardIdentifier(cardIdentifier);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
@@ -69,10 +69,20 @@ public class UserManagementService {
         user.setName(request.getName().trim());
         user.setEmail(email);
         user.setRegistrationCode(registrationCode);
-        user.setRole(request.getRole().trim());
+        user.setRole(parseRole(request.getRole()));
         user.setCardIdentifier(cardIdentifier);
 
         return userRepository.save(user);
     }
 
+    private UserRole parseRole(String rawRole) {
+        if (rawRole == null || rawRole.isBlank()) {
+            throw new UserValidationException("Função/cargo é obrigatório.");
+        }
+        try {
+            return UserRole.valueOf(rawRole.trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new UserValidationException("Função/cargo inválido. Utilize: ADMIN, PROFESSOR, ALUNO ou SERVIDOR.");
+        }
+    }
 }

@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { createUser, fetchUsers, updateUser } from '../services/userService.js';
 
-const initialState = {
+const buildInitialState = (mode = 'admin') => ({
   name: '',
   email: '',
   registrationCode: '',
-  role: '',
+  role: mode === 'admin' ? 'ADMIN' : '',
   cardIdentifier: '',
   password: ''
-};
+});
 
 const inlineInitialState = {
   name: '',
@@ -18,9 +18,18 @@ const inlineInitialState = {
   cardIdentifier: ''
 };
 
+const roleOptions = [
+  { value: 'ADMIN', label: 'Administrador' },
+  { value: 'PROFESSOR', label: 'Professor' },
+  { value: 'ALUNO', label: 'Aluno' },
+  { value: 'SERVIDOR', label: 'Servidor' }
+];
+
+const nonAdminRoleOptions = roleOptions.filter((option) => option.value !== 'ADMIN');
+
 function UserManager({ onUserCreated }) {
   const [users, setUsers] = useState([]);
-  const [formData, setFormData] = useState(initialState);
+  const [formData, setFormData] = useState(buildInitialState('admin'));
   const [loading, setLoading] = useState(false);
   const [listLoading, setListLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
@@ -29,6 +38,7 @@ function UserManager({ onUserCreated }) {
   const [inlineErrors, setInlineErrors] = useState({});
   const [inlineSaving, setInlineSaving] = useState(false);
   const [inlineFeedback, setInlineFeedback] = useState(null);
+  const [createMode, setCreateMode] = useState('admin');
 
   const loadUsers = async () => {
     setListLoading(true);
@@ -49,6 +59,13 @@ function UserManager({ onUserCreated }) {
   useEffect(() => {
     loadUsers();
   }, []);
+
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      role: createMode === 'admin' ? 'ADMIN' : ''
+    }));
+  }, [createMode]);
 
   const validateInline = (draft) => {
     const errors = {};
@@ -74,6 +91,8 @@ function UserManager({ onUserCreated }) {
 
     return errors;
   };
+
+  const formatRole = (value) => roleOptions.find((option) => option.value === value)?.label || value;
 
   const startInlineEdit = (user) => {
     setInlineEditingId(user.id);
@@ -152,7 +171,7 @@ function UserManager({ onUserCreated }) {
   };
 
   const resetForm = () => {
-    setFormData(initialState);
+    setFormData(buildInitialState(createMode));
   };
 
   const handleSubmit = async (event) => {
@@ -190,6 +209,29 @@ function UserManager({ onUserCreated }) {
         <p>Cadastre novos usuários administrados e associe cartões numéricos.</p>
       </div>
 
+      <nav className="nav-tabs">
+        <button
+          type="button"
+          className={createMode === 'admin' ? 'active' : ''}
+          onClick={() => {
+            setCreateMode('admin');
+            setFeedback(null);
+          }}
+        >
+          Cadastrar Administrador
+        </button>
+        <button
+          type="button"
+          className={createMode === 'colaborator' ? 'active' : ''}
+          onClick={() => {
+            setCreateMode('colaborator');
+            setFeedback(null);
+          }}
+        >
+          Cadastrar Colaboradores
+        </button>
+      </nav>
+
       <form className="card crud-form" onSubmit={handleSubmit}>
         <div className="grid">
           <div className="field">
@@ -216,7 +258,18 @@ function UserManager({ onUserCreated }) {
           </div>
           <div className="field">
             <label htmlFor="role">Função/Cargo</label>
-            <input id="role" name="role" value={formData.role} onChange={handleChange} placeholder="Administrador" required />
+            {createMode === 'admin' ? (
+              <input id="role" name="role" value="ADMIN" disabled />
+            ) : (
+              <select id="role" name="role" value={formData.role} onChange={handleChange} required>
+                <option value="">Selecione</option>
+                {nonAdminRoleOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
           <div className="field">
             <label htmlFor="cardIdentifier">Número do cartão</label>
@@ -332,11 +385,18 @@ function UserManager({ onUserCreated }) {
                       <td>
                         {isEditing ? (
                           <div className="table-input">
-                            <input name="role" value={inlineDraft.role} onChange={handleInlineChange} />
+                            <select name="role" value={inlineDraft.role} onChange={handleInlineChange}>
+                              <option value="">Selecione</option>
+                              {roleOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </select>
                             {inlineErrors.role && <small className="inline-error">{inlineErrors.role}</small>}
                           </div>
                         ) : (
-                          user.role
+                          formatRole(user.role)
                         )}
                       </td>
                       <td>

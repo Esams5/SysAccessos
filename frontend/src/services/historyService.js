@@ -5,8 +5,7 @@ export async function fetchHistory(params = {}) {
   return data;
 }
 
-export async function createHistoryEntry(payload) {
-  const { data } = await api.post('/history', payload);
+export async function fetchHistoryByUser(userId) {
+  const { data } = await api.get(`/history/user/${userId}`);
   return data;
 }
-

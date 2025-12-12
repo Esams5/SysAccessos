@@ -45,13 +45,36 @@ O site ficará disponível em `http://localhost:5173`. O frontend já aponta par
 
 ### Fluxo após iniciar as aplicações
 
-1. **Criar administradores**: use `POST /api/auth/register` ou a própria tela de “Criar conta” para cadastrar pelo menos um usuário com `role = ADMIN`.
-2. **Login**: faça login com um usuário `ADMIN`. O painel exibirá abas administrativas.
+1. **Acessar com o administrador padrão**: utilize as credenciais abaixo para entrar pela tela de login.
+2. **Cadastrar novos usuários**: dentro do painel “Usuários” existem duas abas — “Cadastrar Administrador” (cria novos responsáveis pelo sistema) e “Cadastrar Colaboradores” (Professor, Aluno ou Servidor).
 3. **Usuários e Cartões**: cadastre novos usuários/cartões (matrícula e cartão aceitam apenas números).
 4. **Áreas**: defina os ambientes controlados e seus níveis de segurança.
 5. **Permissões**: vincule cartões/usuários às áreas com nível de acesso, vigência e status.
 6. **Simulação de acesso**: informe o número do cartão e a área para simular uma passagem. O sistema valida permissões e grava o evento.
 7. **Histórico**: acompanhe a tabela com nome do usuário, número do cartão, local, tipo de evento e resultado (autorizado/negado).
+
+### Usuário padrão
+
+Na primeira execução, o backend cria automaticamente um administrador para facilitar testes:
+
+- Email: `admin@sysaccessos.local`
+- Senha: `admin123`
+- Matrícula: `00000001`
+- Papel: `ADMIN`
+- Cartão: `99999999`
+
+Use essas credenciais para acessar o painel e, se desejar, altere ou cadastre novos usuários logo após o login.
+
+### Perfis disponíveis
+
+ Ao cadastrar usuários pelo módulo administrativo, selecione um dos perfis abaixo:
+
+- `ADMIN` — acesso completo ao painel e aos CRUDs.
+- `PROFESSOR` — perfil operacional; visualiza histórico.
+- `ALUNO` — perfil básico; visualiza histórico.
+- `SERVIDOR` — funcionários em geral; visualiza histórico.
+
+Usuários não `ADMIN` veem apenas suas próprias permissões e histórico de acesso após o login; para solicitar mudanças devem contatar um administrador.
 
 ## Funcionalidades atuais
 

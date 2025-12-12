@@ -5,6 +5,11 @@ export async function fetchPermissions() {
   return data;
 }
 
+export async function fetchPermissionsByUser(userId) {
+  const { data } = await api.get(`/permissions/user/${userId}`);
+  return data;
+}
+
 export async function createPermission(payload) {
   const { data } = await api.post('/permissions', payload);
   return data;
@@ -18,4 +23,3 @@ export async function updatePermission(id, payload) {
 export async function deletePermission(id) {
   await api.delete(`/permissions/${id}`);
 }
-

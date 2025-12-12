@@ -61,7 +61,7 @@ public class UserController {
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
         dto.setRegistrationCode(user.getRegistrationCode());
-        dto.setRole(user.getRole());
+        dto.setRole(user.getRole().name());
         dto.setCardIdentifier(user.getCardIdentifier());
         dto.setCreatedAt(user.getCreatedAt());
         return dto;

@@ -9,15 +9,9 @@
 - **Problema resolvido**: Falta de rastreabilidade sobre quem está em cada área, demora para criar permissões temporárias e inexistência de alertas quando um cartão usa ambientes fora da vigência autorizada.
 - **Benefício esperado**: Operação única para todo o ciclo (cadastro → permissão → uso → histórico) com insights de IA que recomendam permissões, justificam decisões e disparam alertas proativos.
 
-## 2. Personas
 
-| Nome | Papel | Objetivo ao usar | Problema / Dor |
-| --- | --- | --- | --- |
-| **Carla Menezes** | Coordenadora Administrativa | Criar usuários/cartões e definir áreas sem depender de planilhas | Gasta horas validando duplicidades de matrícula/cartão e não consegue auditar rapidamente |
-| **Rafael Costa** | Analista de Segurança | Monitorar ocupação das salas e bloquear acessos suspeitos | Não possui visão em tempo real das áreas ou alertas automáticos de permanência irregular |
-| **Luana Prado** | Professora/Colaboradora | Garantir que seu cartão esteja liberado antes de se deslocar ao laboratório | Precisa enviar e-mails/ligar para confirmar permissões e perde tempo quando o acesso falha |
 
-## 3. Estrutura de Requisitos
+## 2. Estrutura de Requisitos
 
 - **Épico 1 – Governança de Identidades e Cartões**
   - Funcionalidade 1.1: Cadastro e manutenção de usuários
@@ -38,7 +32,7 @@
   - Funcionalidade 4.1: Prototipação de telas
     - User Story: US12
 
-## 4. User Stories
+## 3. User Stories
 
 | ID | Título | Descrição |
 | --- | --- | --- |
@@ -55,7 +49,7 @@
 | US11 | Alerta inteligente de uso irregular | Como **analista de segurança**, quero receber alertas quando uma sala ficar em uso além da vigência autorizada para tomar ações preventivas. |
 | US12 | Prototipação de telas | Como **product owner**, quero prototipar as telas principais (login, dashboard, CRUD, IA) para validar o fluxo antes da implementação. |
 
-## 5. Product Backlog Prioritário (MoSCoW)
+## 4. Product Backlog Prioritário (MoSCoW)
 
 - **Must**: US01, US03, US05, US06, US07, US08, US09
 - **Should**: US02, US04, US10, US11
@@ -76,7 +70,7 @@
 11. US11 – Alerta inteligente de uso irregular (Should)
 12. US12 – Prototipação de telas (Could)
 
-## 6. Análise de Riscos e Desafios
+## 5. Análise de Riscos e Desafios
 
 | Risco | Descrição | Impacto | Mitigação |
 | --- | --- | --- | --- |

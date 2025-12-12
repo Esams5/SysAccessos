@@ -2,6 +2,7 @@ package com.sysaccessos.backend.config;
 
 import com.sysaccessos.backend.user.User;
 import com.sysaccessos.backend.user.UserRepository;
+import com.sysaccessos.backend.user.UserRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -34,7 +35,7 @@ public class DataInitializer implements CommandLineRunner {
         user.setName("Administrador Padrão");
         user.setEmail(defaultEmail);
         user.setRegistrationCode("00000001");
-        user.setRole("ADMIN");
+        user.setRole(UserRole.ADMIN);
         user.setCardIdentifier("99999999");
         user.setPassword(passwordEncoder.encode("admin123"));
 
@@ -42,4 +43,3 @@ public class DataInitializer implements CommandLineRunner {
         LOGGER.info("Usuário padrão criado: {}", defaultEmail);
     }
 }
-

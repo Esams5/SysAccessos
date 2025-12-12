@@ -9,5 +9,6 @@ public interface AccessHistoryRepository extends JpaRepository<AccessHistory, Lo
     List<AccessHistory> findByRecordedAtBetweenOrderByRecordedAtDesc(OffsetDateTime start, OffsetDateTime end);
 
     List<AccessHistory> findAllByOrderByRecordedAtDesc();
-}
 
+    List<AccessHistory> findByUserIdOrderByRecordedAtDesc(Long userId);
+}

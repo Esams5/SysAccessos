@@ -41,6 +41,16 @@ public class UserPermissionService {
         return toDto(permission);
     }
 
+    @Transactional(readOnly = true)
+    public List<UserPermissionDto> findByUserId(Long userId) {
+        if (userId == null || userId < 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário inválido.");
+        }
+        return permissionRepository.findByUserId(userId).stream()
+            .map(this::toDto)
+            .collect(Collectors.toList());
+    }
+
     @Transactional
     public UserPermissionDto create(UserPermissionRequest request) {
         validateDates(request);
@@ -124,4 +134,3 @@ public class UserPermissionService {
         return dto;
     }
 }
-

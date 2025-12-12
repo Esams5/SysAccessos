@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,10 +39,14 @@ public class AccessHistoryController {
         return historyService.findAll();
     }
 
+    @GetMapping("/user/{userId}")
+    public List<AccessHistoryDto> listByUser(@PathVariable Long userId) {
+        return historyService.findByUser(userId);
+    }
+
     @PostMapping
     public ResponseEntity<AccessHistoryDto> create(@Valid @RequestBody AccessHistoryRequest request) {
         AccessHistoryDto created = historyService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 }
-

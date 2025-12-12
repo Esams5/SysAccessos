@@ -32,6 +32,11 @@ public class UserPermissionController {
         return permissionService.findAll();
     }
 
+    @GetMapping("/user/{userId}")
+    public List<UserPermissionDto> listByUser(@PathVariable Long userId) {
+        return permissionService.findByUserId(userId);
+    }
+
     @GetMapping("/{id}")
     public UserPermissionDto getById(@PathVariable Long id) {
         return permissionService.findById(id);
@@ -54,4 +59,3 @@ public class UserPermissionController {
         return ResponseEntity.noContent().build();
     }
 }
-

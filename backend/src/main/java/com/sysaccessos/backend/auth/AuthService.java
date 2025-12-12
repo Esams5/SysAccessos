@@ -54,7 +54,7 @@ public class AuthService {
             user.getName(),
             user.getEmail(),
             user.getRegistrationCode(),
-            user.getRole(),
+            user.getRole().name(),
             user.getCardIdentifier()
         );
     }

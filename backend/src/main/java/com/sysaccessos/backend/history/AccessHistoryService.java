@@ -42,6 +42,16 @@ public class AccessHistoryService {
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<AccessHistoryDto> findByUser(Long userId) {
+        if (userId == null || userId < 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário inválido.");
+        }
+        return historyRepository.findByUserIdOrderByRecordedAtDesc(userId).stream()
+            .map(this::toDto)
+            .collect(Collectors.toList());
+    }
+
     @Transactional
     public AccessHistoryDto create(AccessHistoryRequest request) {
         User user = userRepository.findById(request.getUserId())
@@ -75,4 +85,3 @@ public class AccessHistoryService {
         return dto;
     }
 }
-

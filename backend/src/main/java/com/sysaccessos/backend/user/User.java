@@ -2,6 +2,8 @@ package com.sysaccessos.backend.user;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,8 +28,9 @@ public class User {
     @Column(nullable = false, unique = true, length = 40)
     private String registrationCode;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 40)
-    private String role;
+    private UserRole role;
 
     @Column(nullable = false, unique = true, length = 80)
     private String cardIdentifier;
@@ -71,11 +74,11 @@ public class User {
         this.registrationCode = registrationCode;
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 
